@@ -33,3 +33,4 @@ WRONG_TOKEN_PREFIX = "Unsupported authorization type"  # noqa: S105
 MALFORMED_PAYLOAD = "Could not validate credentials"
 
 AUTHENTICATION_REQUIRED = "Authentication required"
+AUTHENTICATION_SERVER_UNAVAILABLE = "Authentication's server is unavailable"
