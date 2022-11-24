@@ -1,0 +1,8 @@
+fastapi[all]
+loguru
+uvicorn
+pydantic
+pytest
+pytest-asyncio
+httpx
+neo4j
