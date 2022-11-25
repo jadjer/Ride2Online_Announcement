@@ -12,7 +12,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Optional
 from neo4j import Record, AsyncResult
 
 from app.database.repositories.base_repository import BaseRepository
@@ -21,7 +20,7 @@ from app.models.domain.user import User
 
 class UserRepository(BaseRepository):
 
-    async def get_user_by_id(self, user_id: int) -> Optional[User]:
+    async def get_user_by_id(self, user_id: int) -> User | None:
         query = f"""
             MATCH (phone:Phone)-[:Attached]->(user:User)
             WHERE id(user) = {user_id}
@@ -43,7 +42,7 @@ class UserRepository(BaseRepository):
 
         return user
 
-    async def get_user_by_username(self, username: str) -> Optional[User]:
+    async def get_user_by_username(self, username: str) -> User | None:
         query = f"""
             MATCH (phone:Phone)-[:Attached]->(user:User)
             WHERE user.username = "{username}"

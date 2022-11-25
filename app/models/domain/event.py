@@ -12,15 +12,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-USER_CREATE_ERROR = "User create error"
+from app.models.common import IDModelMixin
 
-WRONG_TOKEN_PREFIX = "Unsupported authorization type"  # noqa: S105
-MALFORMED_PAYLOAD = "Could not validate credentials"
 
-AUTHENTICATION_REQUIRED = "Authentication required"
-AUTHENTICATION_SERVER_UNAVAILABLE = "Authentication's server is unavailable"
-
-EVENT_IS_EXISTS = "Event is exists"
-EVENT_DOES_NOT_EXIST = "Event does not exist"
-EVENT_CREATE_ERROR = "Event create is error"
-EVENT_UPDATE_ERROR = "Event update is error"
+class Event(IDModelMixin):
+    title: str
