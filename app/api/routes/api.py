@@ -14,8 +14,9 @@
 
 from fastapi import APIRouter
 
-from . import events
+from . import events, comments
 
 router = APIRouter()
 
 router.include_router(events.router, tags=["Events"], prefix="/events")
+router.include_router(comments.router, tags=["Comments"], prefix="/events/{event_id}/comments")

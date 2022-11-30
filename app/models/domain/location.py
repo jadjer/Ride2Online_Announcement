@@ -12,18 +12,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from datetime import datetime
-
-from pydantic import HttpUrl
-
-from app.models.common import IDModelMixin, DateTimeModelMixin
-from app.models.domain.location import Location
+from pydantic import BaseModel
 
 
-class Event(IDModelMixin, DateTimeModelMixin):
-    title: str
-    text: str
-    description: str = ""
-    picture: HttpUrl
-    location: Location
-    start_at: datetime
+class Location(BaseModel):
+    latitude: float
+    longitude: float

@@ -12,18 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from datetime import datetime
-
-from pydantic import HttpUrl
-
-from app.models.common import IDModelMixin, DateTimeModelMixin
-from app.models.domain.location import Location
+from app.models.common import DateTimeModelMixin
+from app.models.domain.user import User
 
 
-class Event(IDModelMixin, DateTimeModelMixin):
-    title: str
+class Comment(DateTimeModelMixin):
+    user: User
     text: str
-    description: str = ""
-    picture: HttpUrl
-    location: Location
-    start_at: datetime
