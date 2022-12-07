@@ -41,11 +41,7 @@ async def create_event(
     if not event:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=strings.EVENT_CREATE_ERROR)
 
-    return WrapperResponse(
-        payload=EventResponse(
-            event=Event(id=event.id, title=event.title)
-        )
-    )
+    return WrapperResponse(payload=EventResponse(event=event))
 
 
 @router.get("", status_code=status.HTTP_200_OK, name="events:get-events-by-filter")
@@ -56,11 +52,7 @@ async def get_events_by_filter(
 ) -> WrapperResponse:
     events = await event_repository.get_events(events_filter.limit, events_filter.offset)
 
-    return WrapperResponse(
-        payload=EventsResponse(
-            events=events
-        )
-    )
+    return WrapperResponse(payload=EventsResponse(events=events))
 
 
 @router.get("/{event_id}", status_code=status.HTTP_200_OK, name="events:get-event-by-id")
@@ -73,11 +65,7 @@ async def get_event_by_id(
     if not event:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=strings.EVENT_DOES_NOT_EXIST)
 
-    return WrapperResponse(
-        payload=EventResponse(
-            event=Event(id=event.id, title=event.title)
-        )
-    )
+    return WrapperResponse(payload=EventResponse(event=event))
 
 
 @router.patch('/{event_id}', status_code=status.HTTP_200_OK, name="events:update-event-by-id")
@@ -97,11 +85,7 @@ async def update_event_by_id(
     if not event:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=strings.EVENT_CREATE_ERROR)
 
-    return WrapperResponse(
-        payload=EventResponse(
-            event=Event(id=event.id, title=event.title)
-        )
-    )
+    return WrapperResponse(payload=EventResponse(event=event))
 
 
 @router.delete("/{event_id}", status_code=status.HTTP_200_OK, name="events:delete-event-by-id")
