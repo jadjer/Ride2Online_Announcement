@@ -37,7 +37,7 @@ class AppSettings(BaseAppSettings):
     database_user: str
     database_pass: str
 
-    auth_server: HttpUrl
+    auth_service: HttpUrl
 
     api_prefix: str = ""
 
