@@ -12,11 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from fastapi import APIRouter
+from app.models.common import DateTimeModelMixin
+from app.models.domain.user import User
 
-from . import events, comments
 
-router = APIRouter()
-
-router.include_router(events.router, tags=["Events"], prefix="/events")
-router.include_router(comments.router, tags=["Comments"], prefix="/events/{event_id}/comments")
+class Comment(DateTimeModelMixin):
+    user: User
+    text: str

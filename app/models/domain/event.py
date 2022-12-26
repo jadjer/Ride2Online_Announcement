@@ -12,11 +12,18 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from fastapi import APIRouter
+from datetime import datetime
 
-from . import events, comments
+from pydantic import HttpUrl
 
-router = APIRouter()
+from app.models.common import IDModelMixin, DateTimeModelMixin
+from app.models.domain.location import Location
 
-router.include_router(events.router, tags=["Events"], prefix="/events")
-router.include_router(comments.router, tags=["Comments"], prefix="/events/{event_id}/comments")
+
+class Event(IDModelMixin, DateTimeModelMixin):
+    title: str
+    subtitle: str = ""
+    text: str
+    picture: HttpUrl
+    location: Location
+    start_at: datetime

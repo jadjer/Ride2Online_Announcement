@@ -12,10 +12,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from httpx import AsyncClient
-from typing import Callable
+from httpx import AsyncClient, ConnectError
 from loguru import logger
-
 from fastapi import Depends, HTTPException, status, Security
 
 from app.core.config import get_app_settings
@@ -31,16 +29,23 @@ async def get_current_user_authorizer(
         api_key: str = Security(AuthTokenHeader(name="Authorization")),
         settings: AppSettings = Depends(get_app_settings),
 ) -> User:
-    async with AsyncClient(base_url=settings.auth_server, headers={"Content-Type": "application/json"}) as client:
-        response = await client.get("/user", headers={"Authorization": api_key})
+    headers = {
+        "Content-Type": "application/json",
+    }
 
-    if response.status_code == status.HTTP_401_UNAUTHORIZED:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=strings.MALFORMED_PAYLOAD)
+    async with AsyncClient(base_url=settings.auth_server, headers=headers) as client:
+        try:
+            response = await client.get("/user", headers={"Authorization": api_key})
+        except ConnectError as exception:
+            logger.error(exception)
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=strings.AUTHENTICATION_SERVER_UNAVAILABLE
+            ) from exception
 
     response_wrapper = WrapperResponse(**response.json())
-    if not response_wrapper.success:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=strings.MALFORMED_PAYLOAD)
+    if response_wrapper.success:
+        user_response = UserResponse(**response_wrapper.payload)
+        return user_response.user
 
-    user_response = UserResponse(**response_wrapper.payload)
-
-    return user_response.user
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=strings.MALFORMED_PAYLOAD)

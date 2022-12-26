@@ -12,8 +12,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from random import randrange
-
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -54,10 +52,6 @@ def get_application() -> FastAPI:
     application.add_exception_handler(404, http_error_handler)
 
     application.include_router(api_router, prefix=settings.api_prefix)
-
-    @application.get("/")
-    async def health():
-        return {"health": randrange(100000, 999999)}
 
     return application
 

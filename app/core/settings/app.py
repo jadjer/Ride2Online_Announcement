@@ -29,7 +29,7 @@ class AppSettings(BaseAppSettings):
     openapi_prefix: str = ""
     openapi_url: str = "/openapi.json"
     redoc_url: str = "/redoc"
-    title: str = "Ride2Online Auth"
+    title: str = "Ride2Online Events"
     version: str = "0.1.0"
 
     database_host: str
@@ -40,8 +40,6 @@ class AppSettings(BaseAppSettings):
     auth_server: HttpUrl
 
     api_prefix: str = ""
-
-    jwt_token_prefix: str = "Bearer"
 
     allowed_hosts: List[str] = ["*"]
 

@@ -12,11 +12,13 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from fastapi import APIRouter
+from fastapi import Query
 
-from . import events, comments
+from app.models.schemas.event import DEFAULT_EVENTS_LIMIT, DEFAULT_EVENTS_OFFSET, EventsFilter
 
-router = APIRouter()
 
-router.include_router(events.router, tags=["Events"], prefix="/events")
-router.include_router(comments.router, tags=["Comments"], prefix="/events/{event_id}/comments")
+def get_events_filter(
+        limit: int = Query(DEFAULT_EVENTS_LIMIT, ge=1),
+        offset: int = Query(DEFAULT_EVENTS_OFFSET, ge=0),
+) -> EventsFilter:
+    return EventsFilter(limit=limit, offset=offset)

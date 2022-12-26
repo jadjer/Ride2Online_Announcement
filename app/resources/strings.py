@@ -14,22 +14,13 @@
 
 USER_CREATE_ERROR = "User create error"
 
-USER_DOES_NOT_EXIST_ERROR = "User does not exist"
-PROFILE_DOES_NOT_EXISTS = "Profile does not exists"
-
-INCORRECT_LOGIN_INPUT = "incorrect username or password"
-USERNAME_TAKEN = "User with this username already exists"
-EMAIL_TAKEN = "User with this email already exists"
-PHONE_NUMBER_TAKEN = "User with this phone already exists"
-PHONE_NUMBER_INVALID_ERROR = "Invalid phone number"
-
-SMS_SERVICE_TEMPORARY_UNAVAILABLE = "Phone validation service temporary unavailable"
-SEND_SMS_ERROR = "Error sending sms to phone"
-VERIFICATION_CODE_CREATE_ERROR = "Can't create new verification code to phone number"
-VERIFICATION_CODE_DOES_NOT_EXISTS = "Verification code doesn't exists"
-VERIFICATION_CODE_IS_WRONG = "Verification code is wrong"
-
 WRONG_TOKEN_PREFIX = "Unsupported authorization type"  # noqa: S105
 MALFORMED_PAYLOAD = "Could not validate credentials"
 
 AUTHENTICATION_REQUIRED = "Authentication required"
+AUTHENTICATION_SERVER_UNAVAILABLE = "Authentication's server is unavailable"
+
+EVENT_IS_EXISTS = "Event is exists"
+EVENT_DOES_NOT_EXIST = "Event does not exist"
+EVENT_CREATE_ERROR = "Event create is error"
+EVENT_UPDATE_ERROR = "Event update is error"
