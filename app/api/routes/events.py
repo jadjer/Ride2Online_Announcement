@@ -47,7 +47,7 @@ async def create_event(
 @router.get("", status_code=status.HTTP_200_OK, name="events:get-events-by-filter")
 async def get_events_by_filter(
         events_filter: EventsFilter = Depends(get_events_filter),
-        user: User = Depends(get_current_user_authorizer),
+        # user: User = Depends(get_current_user_authorizer),
         event_repository: EventRepository = Depends(get_repository(EventRepository)),
 ) -> WrapperResponse:
     events = await event_repository.get_events(events_filter.limit, events_filter.offset)

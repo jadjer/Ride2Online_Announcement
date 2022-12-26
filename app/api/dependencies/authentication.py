@@ -29,7 +29,11 @@ async def get_current_user_authorizer(
         api_key: str = Security(AuthTokenHeader(name="Authorization")),
         settings: AppSettings = Depends(get_app_settings),
 ) -> User:
-    async with AsyncClient(base_url=settings.auth_server,headers={"Content-Type": "application/json"}) as client:
+    headers = {
+        "Content-Type": "application/json",
+    }
+
+    async with AsyncClient(base_url=settings.auth_server, headers=headers) as client:
         try:
             response = await client.get("/user", headers={"Authorization": api_key})
         except ConnectError as exception:
