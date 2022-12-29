@@ -30,7 +30,7 @@ class AppSettings(BaseAppSettings):
     openapi_url: str = "/openapi.json"
     redoc_url: str = "/redoc"
     title: str = "Ride2Online Events"
-    version: str = "0.1.0"
+    version: str = "0.0.0"
 
     database_host: str
     database_port: int = 7687
