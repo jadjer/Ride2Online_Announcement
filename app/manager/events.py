@@ -12,27 +12,18 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Callable
-
 from fastapi import FastAPI
 from loguru import logger
 
 from app.core.settings.app import AppSettings
-from app.database.events import close_db_connection, connect_to_db
-from app.manager.events import create_connection_manager
+from app.manager.connection_manager import ConnectionManager
 
 
-def create_start_app_handler(app: FastAPI, settings: AppSettings) -> Callable:
-    async def start_app() -> None:
-        await connect_to_db(app, settings)
-        create_connection_manager(app, settings)
+def create_connection_manager(app: FastAPI, settings: AppSettings):
+    logger.info("Create connection manager")
 
-    return start_app
+    manager = ConnectionManager()
 
+    app.state.manager = manager
 
-def create_stop_app_handler(app: FastAPI) -> Callable:
-    @logger.catch
-    async def stop_app() -> None:
-        await close_db_connection(app)
-
-    return stop_app
+    logger.info("Connection manager created")
