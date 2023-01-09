@@ -14,39 +14,92 @@
 
 from loguru import logger
 
-from fastapi import APIRouter, Depends, status, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, FastAPI, BackgroundTasks
+from starlette.responses import HTMLResponse
 
 from app.api.dependencies.authentication import get_current_user_authorizer
-from app.api.dependencies.database import get_repository
-from app.api.dependencies.get_filter import get_events_filter
-from app.api.dependencies.get_from_path import get_event_id_from_path
-from app.api.dependencies.manager import get_connection_manager
-from app.database.repositories.event_repository import EventRepository
-from app.manager.connection_manager import ConnectionManager
+from app.api.dependencies.connection_manager import get_connection_manager
+from app.api.dependencies.rabbitmq_client import get_rabbitmq_client
+from app.connection_manager.connection_manager import ConnectionManager
+from app.models.domain.action import Action, ActionType
 from app.models.domain.user import User
-from app.models.schemas.event import EventsFilter, EventResponse, EventsResponse, EventCreate, EventUpdate
-from app.models.schemas.wrapper import WrapperResponse
-from app.resources import strings
+from app.rabbitmq_client.rabbitmq_client import RabbitmqClient
 
 router = APIRouter()
+
+html = """
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat</title>
+    </head>
+    <body>
+        <h1>WebSocket Chat</h1>
+        <h2>Your ID: <span id="ws-id"></span></h2>
+        <form action="" onsubmit="sendMessage(event)">
+            <input type="text" id="messageText" autocomplete="off"/>
+            <button>Send</button>
+        </form>
+        <ul id='messages'>
+        </ul>
+        <script>
+            var client_id = Date.now()
+            document.querySelector("#ws-id").textContent = client_id;
+            var ws = new WebSocket(`ws://localhost:8000/ws`);
+            ws.onmessage = function(event) {
+                var messages = document.getElementById('messages')
+                var message = document.createElement('li')
+                var content = document.createTextNode(event.data)
+                message.appendChild(content)
+                messages.appendChild(message)
+            };
+            function sendMessage(event) {
+                var input = document.getElementById("messageText")
+                ws.send(input.value)
+                input.value = ''
+                event.preventDefault()
+            }
+        </script>
+    </body>
+</html>
+"""
+
+
+@router.get("")
+async def get():
+    return HTMLResponse(html)
 
 
 @router.websocket("")
 async def websocket_events(
         websocket: WebSocket,
-        user: User = Depends(get_current_user_authorizer),
-        event_repository: EventRepository = Depends(get_repository(EventRepository)),
-        manager: ConnectionManager = Depends(get_connection_manager)
+        backgroun_tasks: BackgroundTasks
 ) -> None:
-    logger.info(f"New user connection {user.id}")
+    app: FastAPI = websocket.app
 
-    await manager.connect(websocket)
+    rabbitmq_client: RabbitmqClient = app.state.rabbitmq_client
+    connection_manager: ConnectionManager = app.state.connection_manager
+
+    def send_message_to_websocket():
+        while True:
+            action = rabbitmq_client.get_action()
+            print(action)
+            if action:
+                connection_manager.send_personal_message(action.json(), websocket)
+
+    backgroun_tasks.add_task(send_message_to_websocket)
+
+    await connection_manager.connect(websocket)
+    rabbitmq_client.set_action(Action(type=ActionType.EVENT_USER_ONLINE))
 
     try:
         while True:
-            data = await websocket.receive_json()
-            await manager.send_personal_message(f"You wrote: {data}", websocket)
-            await manager.broadcast(f"Client #{user.id} says: {data}")
+            data = await websocket.receive_text()
+
+            await connection_manager.send_personal_message(f"You wrote: {data}", websocket)
+            await connection_manager.broadcast(f"Client says: {data}")
+
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
-        await manager.broadcast(f"Client #{user.id} left the chat")
+        connection_manager.disconnect(websocket)
+        await connection_manager.broadcast(f"Client left the chat")
+        rabbitmq_client.set_action(Action(type=ActionType.EVENT_USER_ONLINE))

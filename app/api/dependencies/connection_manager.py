@@ -12,13 +12,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from fastapi import APIRouter
+from fastapi.requests import Request
+from app.connection_manager.connection_manager import ConnectionManager
 
-from . import events, users_location, vehicle_location, websocket
 
-router = APIRouter()
-
-router.include_router(events.router, tags=["Events"], prefix="/events")
-router.include_router(users_location.router, tags=["Users Location"], prefix="/users/location")
-router.include_router(vehicle_location.router, tags=["Vehicles Location"], prefix="/vehicles/location")
-router.include_router(websocket.router, tags=["Websocket"], prefix="/ws")
+def get_connection_manager(request: Request) -> ConnectionManager:
+    return request.app.state.manager
