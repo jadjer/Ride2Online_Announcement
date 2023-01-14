@@ -14,11 +14,10 @@
 
 from fastapi import APIRouter
 
-from . import events, users_location, vehicle_location, websocket
+from . import events, users_location, vehicle_location
 
 router = APIRouter()
 
 router.include_router(events.router, tags=["Events"], prefix="/events")
 router.include_router(users_location.router, tags=["Users Location"], prefix="/users/location")
 router.include_router(vehicle_location.router, tags=["Vehicles Location"], prefix="/vehicles/location")
-router.include_router(websocket.router, tags=["Websocket"], prefix="/ws")
