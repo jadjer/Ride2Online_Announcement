@@ -13,7 +13,7 @@
 #  limitations under the License.
 
 from fastapi.requests import Request
-from app.manager.connection_manager import ConnectionManager
+from app.connection_manager.connection_manager import ConnectionManager
 
 
 def get_connection_manager(request: Request) -> ConnectionManager:

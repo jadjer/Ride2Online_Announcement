@@ -35,7 +35,7 @@ async def get_current_user_authorizer(
 
     async with AsyncClient(base_url=settings.auth_service, headers=headers) as client:
         try:
-            response = await client.get("/user", headers={"Authorization": api_key})
+            response = await client.get("/users", headers={"Authorization": api_key})
         except ConnectError as exception:
             logger.error(exception)
             raise HTTPException(

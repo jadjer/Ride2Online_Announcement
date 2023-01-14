@@ -133,7 +133,7 @@ class EventRepository(BaseRepository):
         event.updated_at = datetime.now()
 
         query = f"""
-            MATCH (event:Event)-[:Author]->(user:User)
+            MATCH (location:Location)<-[:LocatedAt]-(event:Event)-[:Author]->(user:User)
             WHERE id(event) = {event_id} AND id(user) = {user_id}
             SET event.title = "{event.title}"
             SET event.subtitle = "{event.subtitle}"

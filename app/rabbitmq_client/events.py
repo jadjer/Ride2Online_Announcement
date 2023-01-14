@@ -12,28 +12,33 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Callable
-
 from fastapi import FastAPI
 from loguru import logger
 
 from app.core.settings.app import AppSettings
-from app.database.events import close_db_connection, connect_to_db
-from app.rabbitmq_client.events import start_rabbitmq_client, stop_rabbitmq_client
+from .rabbitmq_client import RabbitmqClient
 
 
-def create_start_app_handler(app: FastAPI, settings: AppSettings) -> Callable:
-    async def start_app() -> None:
-        await connect_to_db(app, settings)
-        start_rabbitmq_client(app, settings)
+def start_rabbitmq_client(app: FastAPI, settings: AppSettings):
+    logger.info("Connect to RabbitMQ")
 
-    return start_app
+    rabbitmq_client = RabbitmqClient(
+        settings.rabbitmq_host,
+        settings.rabbitmq_port,
+        settings.rabbitmq_user,
+        settings.rabbitmq_pass,
+    )
+    rabbitmq_client.start()
+
+    app.state.rabbitmq_client = rabbitmq_client
+
+    logger.info("Connection to RabbitMQ established")
 
 
-def create_stop_app_handler(app: FastAPI) -> Callable:
-    @logger.catch
-    async def stop_app() -> None:
-        await close_db_connection(app)
-        stop_rabbitmq_client(app)
+def stop_rabbitmq_client(app: FastAPI) -> None:
+    logger.info("Closing connection to RabbitMQ")
 
-    return stop_app
+    rabbitmq_client: RabbitmqClient = app.state.rabbitmq_client
+    rabbitmq_client.stop()
+
+    logger.info("Connection closed")
