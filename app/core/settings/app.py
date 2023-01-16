@@ -17,7 +17,7 @@ import sys
 from typing import Any, Dict, List, Tuple
 
 from loguru import logger
-from pydantic import SecretStr, HttpUrl
+from pydantic import HttpUrl
 
 from app.core.logging import InterceptHandler
 from app.core.settings.base import BaseAppSettings
@@ -29,7 +29,7 @@ class AppSettings(BaseAppSettings):
     openapi_prefix: str = ""
     openapi_url: str = "/openapi.json"
     redoc_url: str = "/redoc"
-    title: str = "Ride2Online Events"
+    title: str = "Ride2Online Announcement"
     version: str = "0.0.0"
 
     database_host: str
