@@ -19,13 +19,11 @@ from loguru import logger
 
 from app.core.settings.app import AppSettings
 from app.database.events import close_db_connection, connect_to_db
-from app.rabbitmq_client.events import start_rabbitmq_client, stop_rabbitmq_client
 
 
 def create_start_app_handler(app: FastAPI, settings: AppSettings) -> Callable:
     async def start_app() -> None:
         await connect_to_db(app, settings)
-        start_rabbitmq_client(app, settings)
 
     return start_app
 
@@ -34,6 +32,5 @@ def create_stop_app_handler(app: FastAPI) -> Callable:
     @logger.catch
     async def stop_app() -> None:
         await close_db_connection(app)
-        stop_rabbitmq_client(app)
 
     return stop_app

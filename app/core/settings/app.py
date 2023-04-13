@@ -37,13 +37,6 @@ class AppSettings(BaseAppSettings):
     database_user: str
     database_pass: str
 
-    rabbitmq_host: str
-    rabbitmq_port: int = 5672
-    rabbitmq_user: str
-    rabbitmq_pass: str
-
-    auth_service: HttpUrl
-
     api_prefix: str = ""
 
     allowed_hosts: List[str] = ["*"]
