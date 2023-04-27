@@ -17,6 +17,7 @@ import sys
 
 from typing import Any, Dict, List, Tuple
 from loguru import logger
+from pydantic import FilePath
 
 from app.core.logging import InterceptHandler
 from app.core.settings.base import BaseAppSettings
@@ -35,6 +36,9 @@ class AppSettings(BaseAppSettings):
     database_port: int = 7687
     database_user: str
     database_pass: str
+
+    public_key_path: FilePath
+    public_key: str = ""
 
     api_prefix: str = "/api"
 
