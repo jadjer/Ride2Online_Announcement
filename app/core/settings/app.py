@@ -4,7 +4,7 @@
 #  you may not use this file except in compliance with the License.
 #  You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#      https://www.apache.org/licenses/LICENSE-2.0
 #
 #  Unless required by applicable law or agreed to in writing, software
 #  distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,10 +14,9 @@
 
 import logging
 import sys
-from typing import Any, Dict, List, Tuple
 
+from typing import Any, Dict, List, Tuple
 from loguru import logger
-from pydantic import HttpUrl
 
 from app.core.logging import InterceptHandler
 from app.core.settings.base import BaseAppSettings
@@ -30,14 +29,14 @@ class AppSettings(BaseAppSettings):
     openapi_url: str = "/openapi.json"
     redoc_url: str = "/redoc"
     title: str = "Ride2Online Announcement"
-    version: str = "0.0.0"
+    version: str = "v0.0.0"
 
     database_host: str
     database_port: int = 7687
     database_user: str
     database_pass: str
 
-    api_prefix: str = ""
+    api_prefix: str = "/api"
 
     allowed_hosts: List[str] = ["*"]
 
