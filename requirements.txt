@@ -1,9 +1,9 @@
 fastapi[all]
+python-jose[cryptography]
 loguru
 uvicorn
 pydantic
 pytest
 pytest-asyncio
-httpx
 neo4j
-pika
+httpx
