@@ -12,8 +12,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from fastapi import Path
+from fastapi import APIRouter
 
+from app.api.routes.v1 import users_location, vehicle_location, events
 
-def get_event_id(event_id: int = Path(..., ge=1)) -> int:
-    return event_id
+router = APIRouter(prefix="/v1")
+
+router.include_router(events.router, tags=["Events"], prefix="/events")
+router.include_router(users_location.router, tags=["Users Location"], prefix="/users/location")
+router.include_router(vehicle_location.router, tags=["Vehicles Location"], prefix="/vehicles/location")

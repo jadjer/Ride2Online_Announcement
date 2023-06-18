@@ -12,8 +12,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from fastapi import Path
+from .strings_en import StringsEN
+from .strings_ru import StringsRU
 
 
-def get_event_id(event_id: int = Path(..., ge=1)) -> int:
-    return event_id
+def getLanguage(language: str) -> StringsEN:
+    if language == "ru":
+        return StringsRU()
+
+    return StringsEN()
