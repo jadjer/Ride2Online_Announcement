@@ -17,7 +17,7 @@ import sys
 
 from typing import Any, Dict, List, Tuple
 from loguru import logger
-from pydantic import FilePath
+from pydantic import FilePath, IPvAnyAddress
 
 from app.core.logging import InterceptHandler
 from app.core.settings.base import BaseAppSettings
@@ -29,12 +29,12 @@ class AppSettings(BaseAppSettings):
     openapi_prefix: str = ""
     openapi_url: str = "/openapi.json"
     redoc_url: str = "/redoc"
-    title: str = "Ride2Online Announcement"
+    title: str = "Ride Online Event"
     version: str = "v0.0.0"
 
-    database_host: str
+    database_host: IPvAnyAddress = "127.0.0.1"
     database_port: int = 7687
-    database_user: str
+    database_user: str = "neo4j"
     database_pass: str
 
     public_key_path: FilePath
