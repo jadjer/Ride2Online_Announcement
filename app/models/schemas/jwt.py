@@ -12,10 +12,15 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from fastapi import APIRouter
+from datetime import datetime
+from pydantic import BaseModel
 
-from app.api.routes.v1 import events
 
-router = APIRouter(prefix="/v1")
+class JWTMeta(BaseModel):
+    exp: datetime
+    sub: str
 
-router.include_router(events.router, tags=["Events"], prefix="/events")
+
+class JWTUser(BaseModel):
+    user_id: int
+    username: str
