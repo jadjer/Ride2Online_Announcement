@@ -34,27 +34,35 @@ class EventRepository(BaseRepository):
                                       location: Location,
                                       start_at: datetime,
                                       **kwargs) -> Event | None:
-        query = f"""
+        query = """
             MATCH (user:User)
-            WHERE id(user) = {user_id}
+            WHERE id(user) = $user_id
             CREATE (event:Event)-[:Author]->(user)
             CREATE (event)-[:LocatedAt]->(location:Location)
-            SET event.title = "{title}"
-            SET event.subtitle = "{subtitle}"
-            SET event.text = "{text}"
-            SET event.picture = "{picture}"
-            SET event.start_at = "{start_at}"
-            SET event.created_at = "{datetime.now()}"
-            SET event.updated_at = "{datetime.now()}"
-            SET location.name = "{location.name}"
-            SET location.description = "{location.description}"
-            SET location.address = "{location.address}"
-            SET location.latitude = "{location.latitude}"
-            SET location.longitude = "{location.longitude}"
+            SET event.title = $title
+            SET event.subtitle = $subtitle
+            SET event.text = $text
+            SET event.picture = $picture
+            SET event.start_at = $start_at
+            SET event.created_at = $timestamp
+            SET event.updated_at = $timestamp
+            SET location.name = $location.name
+            SET location.description = $location.description
+            SET location.address = $location.address
+            SET location.latitude = $location.latitude
+            SET location.longitude = $location.longitude
             RETURN id(event) AS event_id, event, location
         """
 
-        result: AsyncResult = await self.session.run(query)
+        result: AsyncResult = await self.session.run(query,
+                                                     user_id=user_id,
+                                                     title=title,
+                                                     subtitle=subtitle,
+                                                     text=text,
+                                                     picture=picture,
+                                                     start_at=start_at,
+                                                     timestamp=datetime.now(),
+                                                     location=location)
 
         try:
             record: Record | None = await result.single()
@@ -65,13 +73,13 @@ class EventRepository(BaseRepository):
         return self.get_event_from_record(record)
 
     async def get_events(self, limit: int, offset: int) -> List[Event]:
-        query = f"""
+        query = """
             MATCH (event:Event)-[:LocatedAt]->(location:Location)
             RETURN id(event) AS event_id, event, location
-            LIMIT {limit}
+            LIMIT $limit
         """
 
-        result: AsyncResult = await self.session.run(query)
+        result: AsyncResult = await self.session.run(query, limit=limit)
 
         events: List[Event] = []
 
@@ -82,25 +90,24 @@ class EventRepository(BaseRepository):
         return events
 
     async def get_event_by_id(self, event_id: int) -> Event | None:
-        query = f"""
+        query = """
             MATCH (event:Event)-[:LocatedAt]->(location:Location)
-            WHERE id(event) = {event_id}
+            WHERE id(event) = $event_id
             RETURN id(event) AS event_id, event, location
         """
 
-        result: AsyncResult = await self.session.run(query)
+        result: AsyncResult = await self.session.run(query, event_id=event_id)
         record: Record | None = await result.single()
 
         return self.get_event_from_record(record)
 
     async def get_event_by_title(self, title: str) -> Event | None:
-        query = f"""
-            MATCH (event:Event)-[:LocatedAt]->(location:Location)
-            WHERE event.title = "{title}"
+        query = """
+            MATCH (event:Event {title: $title})-[:LocatedAt]->(location:Location)
             RETURN id(event) AS event_id, event, location
         """
 
-        result: AsyncResult = await self.session.run(query)
+        result: AsyncResult = await self.session.run(query, title=title)
         record: Record | None = await result.single()
 
         return self.get_event_from_record(record)
@@ -131,34 +138,34 @@ class EventRepository(BaseRepository):
         event.created_at = event.created_at
         event.updated_at = datetime.now()
 
-        query = f"""
+        query = """
             MATCH (location:Location)<-[:LocatedAt]-(event:Event)-[:Author]->(user:User)
             WHERE id(event) = {event_id} AND id(user) = {user_id}
-            SET event.title = "{event.title}"
-            SET event.subtitle = "{event.subtitle}"
-            SET event.text = "{event.text}"
-            SET event.picture = "{event.picture}"
-            SET event.start_at = "{event.start_at}"
-            SET event.created_at = "{event.created_at}"
-            SET event.updated_at = "{event.updated_at}"
-            SET location.name = "{event.location.name}"
-            SET location.description = "{event.location.description}"
-            SET location.address = "{event.location.address}"
-            SET location.latitude = "{event.location.latitude}"
-            SET location.longitude = "{event.location.longitude}"
+            SET event.title = $event.title
+            SET event.subtitle = $event.subtitle
+            SET event.text = $event.text
+            SET event.picture = $event.picture
+            SET event.start_at = $event.start_at
+            SET event.created_at = $event.created_at
+            SET event.updated_at = $event.updated_at
+            SET location.name = $event.location.name
+            SET location.description = $event.location.description
+            SET location.address = $event.location.address
+            SET location.latitude = $event.location.latitude
+            SET location.longitude = $event.location.longitude
             RETURN id(event) AS event_id, event, location
         """
-        await self.session.run(query)
+        await self.session.run(query, user_id=user_id, event_id=event_id, **event.dict())
 
         return await self.get_event_by_id(event_id)
 
     async def delete_event_by_id(self, user_id: int, event_id: int) -> None:
-        query = f"""
+        query = """
             MATCH (event:Event)-[:Author]->(user:User)
-            WHERE id(event) = {event_id} AND id(user) = {user_id}
+            WHERE id(event) = $event_id AND id(user) = $user_id
             DETACH DELETE event
         """
-        await self.session.run(query)
+        await self.session.run(query, user_id=user_id, event_id=event_id)
 
     @staticmethod
     def get_event_from_record(record: Record) -> Event | None:

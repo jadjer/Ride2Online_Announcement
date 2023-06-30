@@ -12,40 +12,53 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from httpx import AsyncClient, ConnectError
 from loguru import logger
-from fastapi import Depends, HTTPException, status, Security
+from typing import Callable
+from fastapi import Depends, HTTPException, Security, status
 
+from app.api.dependencies.get_from_header import get_language
 from app.core.config import get_app_settings
 from app.core.settings.app import AppSettings
-from app.models.domain.user import User
-from app.models.schemas.user import UserResponse
-from app.models.schemas.wrapper import WrapperResponse
-from app.resources import strings
+from app.resources import strings_factory
 from app.services.auth_token_header import AuthTokenHeader
+from app.services.token import get_user_id_from_access_token
 
 
-async def get_current_user_authorizer(
-        api_key: str = Security(AuthTokenHeader(name="Authorization")),
+HEADER_KEY = "Authorization"
+
+
+def get_current_user_authorizer() -> Callable:
+    return _get_user_id_from_token
+
+
+def _get_authorization_header(
+        language: str = Depends(get_language),
+        api_key: str = Security(AuthTokenHeader(name=HEADER_KEY)),
         settings: AppSettings = Depends(get_app_settings),
-) -> User:
-    headers = {
-        "Content-Type": "application/json",
-    }
+) -> str:
+    strings = strings_factory.getLanguage(language)
 
-    async with AsyncClient(base_url=settings.auth_service, headers=headers) as client:
-        try:
-            response = await client.get("/users", headers={"Authorization": api_key})
-        except ConnectError as exception:
-            logger.error(exception)
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail=strings.AUTHENTICATION_SERVER_UNAVAILABLE
-            ) from exception
+    try:
+        token_prefix, token = api_key.split(" ")
+    except ValueError as exception:
+        logger.error(exception)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=strings.WRONG_TOKEN_PREFIX)
 
-    response_wrapper = WrapperResponse(**response.json())
-    if response_wrapper.success:
-        user_response = UserResponse(**response_wrapper.payload)
-        return user_response.user
+    if token_prefix != settings.jwt_token_prefix:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=strings.WRONG_TOKEN_PREFIX)
 
-    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=strings.MALFORMED_PAYLOAD)
+    return token
+
+
+def _get_user_id_from_token(
+        language: str = Depends(get_language),
+        token: str = Depends(_get_authorization_header),
+        settings: AppSettings = Depends(get_app_settings),
+) -> int:
+    strings = strings_factory.getLanguage(language)
+
+    user_id = get_user_id_from_access_token(token, settings.public_key)
+    if not user_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=strings.MALFORMED_PAYLOAD)
+
+    return user_id

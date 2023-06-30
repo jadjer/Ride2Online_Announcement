@@ -12,10 +12,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from fastapi import APIRouter
+from fastapi import Header
 
-from app.api.routes.v1 import events
 
-router = APIRouter(prefix="/v1")
-
-router.include_router(events.router, tags=["Events"], prefix="/events")
+def get_language(language: str = Header(default="en", alias="Accept-Language")) -> str:
+    return language
