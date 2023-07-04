@@ -29,7 +29,7 @@ class AppSettings(BaseAppSettings):
     openapi_prefix: str = ""
     openapi_url: str = "/openapi.json"
     redoc_url: str = "/redoc"
-    title: str = "Ride Online Event"
+    title: str = "Ride Online Events"
     version: str = "v0.0.0"
 
     database_host: str = "127.0.0.1"
