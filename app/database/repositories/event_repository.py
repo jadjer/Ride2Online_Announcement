@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from loguru import logger
 from typing import List
 from neo4j import AsyncResult, Record
@@ -59,8 +59,11 @@ class EventRepository(BaseRepository):
         """
 
         event = Event(title=title, subtitle=subtitle, text=text, picture=picture, location=location, start_at=start_at)
-        event.created_at = datetime.now().timestamp()
-        event.updated_at = datetime.now().timestamp()
+
+        tz = timezone(offset=timedelta(hours=3))
+
+        event.created_at = datetime.now(tz)
+        event.updated_at = datetime.now(tz)
 
         result: AsyncResult = await self.session.run(query, user_id=user_id, **event.dict())
 
@@ -122,7 +125,7 @@ class EventRepository(BaseRepository):
             text: str | None = None,
             picture: str | None = None,
             location: Location | None = None,
-            start_at: datetime | None = None,
+            start_at: str | None = None,
             **kwargs
     ) -> Event | None:
         event = await self.get_event_by_id(event_id)
@@ -135,8 +138,10 @@ class EventRepository(BaseRepository):
         event.picture = picture or event.picture
         event.location = location or event.location
         event.start_at = start_at or event.start_at
-        event.created_at = event.created_at
-        event.updated_at = datetime.now()
+
+        tz = timezone(offset=timedelta(hours=3))
+
+        event.updated_at = datetime.now(tz)
 
         query = """
             MATCH (location:Location)<-[:LocatedAt]-(event:Event)-[:Author]->(user:User)
@@ -187,9 +192,9 @@ class EventRepository(BaseRepository):
             text=record["event"]["text"],
             picture=record["event"]["picture"],
             location=location,
-            start_at=datetime.fromisoformat(record["event"]["start_at"]),
-            created_at=datetime.fromtimestamp(record["event"]["created_at"]),
-            updated_at=datetime.fromtimestamp(record["event"]["updated_at"]),
+            start_at=datetime.fromisoformat(str(record["event"]["start_at"])),
+            created_at=datetime.fromisoformat(str(record["event"]["created_at"])),
+            updated_at=datetime.fromisoformat(str(record["event"]["updated_at"])),
         )
 
         return event

@@ -12,7 +12,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from loguru import logger
 from fastapi import APIRouter, Depends, status, HTTPException
 
 from app.api.dependencies.authentication import get_current_user_authorizer
@@ -50,7 +49,6 @@ async def create_event(
 @router.get("", status_code=status.HTTP_200_OK, name="events:get-events-by-filter")
 async def get_events_by_filter(
         events_filter: EventsFilter = Depends(get_events_filter),
-        language: str = Depends(get_language),
         event_repository: EventRepository = Depends(get_repository(EventRepository)),
 ) -> WrapperResponse:
     events = await event_repository.get_events(events_filter.limit, events_filter.offset)
