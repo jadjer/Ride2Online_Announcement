@@ -17,7 +17,6 @@ from .strings_en import StringsEN
 
 class StringsRU(StringsEN):
     USER_CREATE_ERROR = "Ошибка создания нового пользователя"
-
     USER_DOES_NOT_EXIST_ERROR = "Пользователь не найден"
 
     INCORRECT_LOGIN_INPUT = "Неверный username или password"
@@ -41,3 +40,8 @@ class StringsRU(StringsEN):
     REFRESH_TOKEN_IS_REVOKED = "Refresh token отозван"
 
     AUTHENTICATION_REQUIRED = "Требуется авторизация"
+
+    EVENT_IS_EXISTS = "Событие уже существует"
+    EVENT_DOES_NOT_EXIST = "Событие не найдено"
+    EVENT_CREATE_ERROR = "Ошибка создания нового события"
+    EVENT_UPDATE_ERROR = "Ошибка обновления события"

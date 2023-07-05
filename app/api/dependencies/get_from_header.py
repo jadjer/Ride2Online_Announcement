@@ -15,5 +15,7 @@
 from fastapi import Header
 
 
-def get_language(language: str = Header(default="en", alias="Accept-Language")) -> str:
+def get_language(
+        language: str = Header(default="en", alias="Accept-Language")
+) -> str:
     return language

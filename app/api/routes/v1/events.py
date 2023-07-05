@@ -23,7 +23,7 @@ from app.api.dependencies.get_from_path import get_event_id
 from app.database.repositories.event_repository import EventRepository
 from app.models.schemas.event import EventsFilter, EventResponse, EventsResponse, EventCreate, EventUpdate
 from app.models.schemas.wrapper import WrapperResponse
-from app.resources import strings, strings_factory
+from app.resources import strings_factory
 
 router = APIRouter()
 
@@ -35,16 +35,14 @@ async def create_event(
         user_id: int = Depends(get_current_user_authorizer()),
         event_repository: EventRepository = Depends(get_repository(EventRepository)),
 ) -> WrapperResponse:
-    logger.info("User ID: {}", user_id)
-
-    # strings = strings_factory.getLanguage(language)
+    strings = strings_factory.get_language(language)
 
     if await event_repository.get_event_by_title(request.title):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=strings.EVENT_IS_EXISTS)
+        raise HTTPException(status.HTTP_409_CONFLICT, strings.EVENT_IS_EXISTS)
 
     event = await event_repository.create_event_by_user_id(user_id, **request.__dict__)
     if not event:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=strings.EVENT_CREATE_ERROR)
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, strings.EVENT_CREATE_ERROR)
 
     return WrapperResponse(payload=EventResponse(event=event))
 
@@ -66,9 +64,11 @@ async def get_event_by_id(
         language: str = Depends(get_language),
         event_repository: EventRepository = Depends(get_repository(EventRepository)),
 ) -> WrapperResponse:
+    strings = strings_factory.get_language(language)
+
     event = await event_repository.get_event_by_id(event_id)
     if not event:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=strings.EVENT_DOES_NOT_EXIST)
+        raise HTTPException(status.HTTP_404_NOT_FOUND, strings.EVENT_DOES_NOT_EXIST)
 
     return WrapperResponse(payload=EventResponse(event=event))
 
@@ -81,15 +81,17 @@ async def update_event_by_id(
         user_id: int = Depends(get_current_user_authorizer()),
         event_repository: EventRepository = Depends(get_repository(EventRepository)),
 ) -> WrapperResponse:
+    strings = strings_factory.get_language(language)
+
     if await event_repository.get_event_by_title(request.title):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=strings.EVENT_IS_EXISTS)
+        raise HTTPException(status.HTTP_409_CONFLICT, strings.EVENT_IS_EXISTS)
 
     if not await event_repository.get_event_by_id(event_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=strings.EVENT_DOES_NOT_EXIST)
+        raise HTTPException(status.HTTP_404_NOT_FOUND, strings.EVENT_DOES_NOT_EXIST)
 
     event = await event_repository.update_event_by_id(user_id, event_id, **request.__dict__)
     if not event:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=strings.EVENT_CREATE_ERROR)
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, strings.EVENT_CREATE_ERROR)
 
     return WrapperResponse(payload=EventResponse(event=event))
 
@@ -101,8 +103,10 @@ async def delete_event_by_id(
         user_id: int = Depends(get_current_user_authorizer()),
         event_repository: EventRepository = Depends(get_repository(EventRepository)),
 ) -> WrapperResponse:
+    strings = strings_factory.get_language(language)
+
     if not await event_repository.get_event_by_id(event_id):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=strings.EVENT_DOES_NOT_EXIST)
+        raise HTTPException(status.HTTP_409_CONFLICT, strings.EVENT_DOES_NOT_EXIST)
 
     await event_repository.delete_event_by_id(user_id, event_id)
 

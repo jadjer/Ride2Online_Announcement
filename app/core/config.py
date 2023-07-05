@@ -21,4 +21,7 @@ from app.core.settings.app import AppSettings
 def get_app_settings() -> AppSettings:
     config = AppSettings
 
+    with open(config.public_key_path) as f:
+        config.public_key = f.read()
+
     return config()

@@ -28,9 +28,7 @@ REFRESH_TOKEN_EXPIRE_DAYS = 365
 
 def get_user_id_from_access_token(access_token: str, secret_key: str) -> int | None:
     try:
-        token_date = jwt.decode(
-            access_token, secret_key, algorithms=[ALGORITHM], subject=JWT_ACCESS_SUBJECT
-        )
+        token_date = jwt.decode(access_token, secret_key, algorithms=[ALGORITHM], subject=JWT_ACCESS_SUBJECT)
         user_data = JWTUser(**token_date)
     except JWTError:
         return None
@@ -45,9 +43,7 @@ def get_user_id_from_access_token(access_token: str, secret_key: str) -> int | N
 
 def get_user_id_from_refresh_token(access_token: str, refresh_token: str, secret_key: str) -> int | None:
     try:
-        token_date = jwt.decode(
-            refresh_token, secret_key, algorithms=[ALGORITHM], subject=JWT_REFRESH_SUBJECT, access_token=access_token
-        )
+        token_date = jwt.decode(refresh_token, secret_key, algorithms=[ALGORITHM], subject=JWT_REFRESH_SUBJECT, access_token=access_token)
         user_data = JWTUser(**token_date)
     except JWTError:
         return None

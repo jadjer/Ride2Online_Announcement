@@ -14,7 +14,6 @@
 
 class StringsEN(object):
     USER_CREATE_ERROR = "User create error"
-
     USER_DOES_NOT_EXIST_ERROR = "User does not exist"
 
     INCORRECT_LOGIN_INPUT = "incorrect username or password"
@@ -38,3 +37,9 @@ class StringsEN(object):
     REFRESH_TOKEN_IS_REVOKED = "Refresh token is revoked"
 
     AUTHENTICATION_REQUIRED = "Authentication required"
+    AUTHENTICATION_SERVER_UNAVAILABLE = "Authentication's server is unavailable"
+
+    EVENT_IS_EXISTS = "Event is exists"
+    EVENT_DOES_NOT_EXIST = "Event does not exist"
+    EVENT_CREATE_ERROR = "Event create is error"
+    EVENT_UPDATE_ERROR = "Event update is error"
