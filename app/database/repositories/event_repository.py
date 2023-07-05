@@ -59,8 +59,8 @@ class EventRepository(BaseRepository):
         """
 
         event = Event(title=title, subtitle=subtitle, text=text, picture=picture, location=location, start_at=start_at)
-        event.created_at = datetime.now()
-        event.updated_at = datetime.now()
+        event.created_at = datetime.now().timestamp()
+        event.updated_at = datetime.now().timestamp()
 
         result: AsyncResult = await self.session.run(query, user_id=user_id, **event.dict())
 
@@ -187,9 +187,9 @@ class EventRepository(BaseRepository):
             text=record["event"]["text"],
             picture=record["event"]["picture"],
             location=location,
-            start_at=record["event"]["start_at"],
-            created_at=record["event"]["created_at"],
-            updated_at=record["event"]["updated_at"]
+            start_at=datetime.fromtimestamp(record["event"]["start_at"]),
+            created_at=datetime.fromtimestamp(record["event"]["created_at"]),
+            updated_at=datetime.fromtimestamp(record["event"]["updated_at"]),
         )
 
         return event
