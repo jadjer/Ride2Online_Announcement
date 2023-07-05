@@ -26,43 +26,48 @@ from app.models.domain.location import Location
 
 class EventRepository(BaseRepository):
 
-    async def create_event_by_user_id(self, user_id: int, *,
-                                      title: str,
-                                      subtitle: str = "",
-                                      text: str = "",
-                                      picture: HttpUrl,
-                                      location: Location,
-                                      start_at: datetime,
-                                      **kwargs) -> Event | None:
+    async def create_event_by_user_id(
+            self,
+            user_id: int,
+            *,
+            title: str,
+            subtitle: str = "",
+            text: str = "",
+            picture: HttpUrl,
+            location: Location,
+            start_at: datetime,
+            **kwargs
+    ) -> Event | None:
         query = """
             MATCH (user:User)
             WHERE id(user) = $user_id
             CREATE (event:Event)-[:Author]->(user)
             CREATE (event)-[:LocatedAt]->(location:Location)
-            SET event.title = $title
-            SET event.subtitle = $subtitle
-            SET event.text = $text
-            SET event.picture = $picture
-            SET event.start_at = $start_at
-            SET event.created_at = $timestamp
-            SET event.updated_at = $timestamp
-            SET location.name = $location.name
-            SET location.description = $location.description
-            SET location.address = $location.address
-            SET location.latitude = $location.latitude
-            SET location.longitude = $location.longitude
+            SET event.title = $event.title
+            SET event.subtitle = $event.subtitle
+            SET event.text = $event.text
+            SET event.picture = $event.picture
+            SET event.start_at = $event.start_at
+            SET event.created_at = $event.created_at
+            SET event.updated_at = $event.updated_at
+            SET location.name = $event.location.name
+            SET location.description = $event.location.description
+            SET location.address = $event.location.address
+            SET location.latitude = $event.location.latitude
+            SET location.longitude = $event.location.longitude
             RETURN id(event) AS event_id, event, location
         """
 
-        result: AsyncResult = await self.session.run(query,
-                                                     user_id=user_id,
-                                                     title=title,
-                                                     subtitle=subtitle,
-                                                     text=text,
-                                                     picture=picture,
-                                                     start_at=start_at,
-                                                     timestamp=datetime.now(),
-                                                     location=location)
+        event = Event(title=title)
+        event.subtitle = subtitle
+        event.text = text
+        event.picture = picture
+        event.location = location
+        event.start_at = start_at
+        event.created_at = datetime.now()
+        event.updated_at = datetime.now()
+
+        result: AsyncResult = await self.session.run(query, user_id=user_id, event=event.__dict__)
 
         try:
             record: Record | None = await result.single()
@@ -120,7 +125,7 @@ class EventRepository(BaseRepository):
             title: str | None = None,
             subtitle: str | None = None,
             text: str | None = None,
-            picture: HttpUrl | None = None,
+            picture: str | None = None,
             location: Location | None = None,
             start_at: datetime | None = None,
             **kwargs

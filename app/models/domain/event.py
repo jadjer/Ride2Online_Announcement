@@ -23,7 +23,7 @@ from app.models.domain.location import Location
 class Event(IDModelMixin, DateTimeModelMixin):
     title: str
     subtitle: str = ""
-    text: str
-    picture: HttpUrl
-    location: Location
-    start_at: datetime
+    text: str = ""
+    picture: str = ""
+    location: Location = Location()
+    start_at: datetime = datetime.now()
