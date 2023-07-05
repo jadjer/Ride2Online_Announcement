@@ -36,16 +36,16 @@ def _get_authorization_header(
         api_key: str = Security(AuthTokenHeader(name=HEADER_KEY)),
         settings: AppSettings = Depends(get_app_settings),
 ) -> str:
-    strings = strings_factory.getLanguage(language)
+    strings = strings_factory.get_language(language)
 
     try:
         token_prefix, token = api_key.split(" ")
     except ValueError as exception:
         logger.error(exception)
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=strings.WRONG_TOKEN_PREFIX)
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, strings.WRONG_TOKEN_PREFIX)
 
     if token_prefix != settings.jwt_token_prefix:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=strings.WRONG_TOKEN_PREFIX)
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, strings.WRONG_TOKEN_PREFIX)
 
     return token
 
@@ -55,10 +55,10 @@ def _get_user_id_from_token(
         token: str = Depends(_get_authorization_header),
         settings: AppSettings = Depends(get_app_settings),
 ) -> int:
-    strings = strings_factory.getLanguage(language)
+    strings = strings_factory.get_language(language)
 
     user_id = get_user_id_from_access_token(token, settings.public_key)
     if not user_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=strings.MALFORMED_PAYLOAD)
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, strings.MALFORMED_PAYLOAD)
 
     return user_id
