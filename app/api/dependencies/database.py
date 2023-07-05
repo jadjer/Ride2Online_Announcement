@@ -13,7 +13,6 @@
 #  limitations under the License.
 
 from typing import Callable, Type
-
 from fastapi import Depends
 from fastapi.requests import Request
 from neo4j import AsyncSession
