@@ -140,7 +140,7 @@ class EventRepository(BaseRepository):
 
         query = """
             MATCH (location:Location)<-[:LocatedAt]-(event:Event)-[:Author]->(user:User)
-            WHERE id(event) = {event_id} AND id(user) = {user_id}
+            WHERE id(event) = $event_id AND id(user) = $user_id
             SET event.title = $event.title
             SET event.subtitle = $event.subtitle
             SET event.text = $event.text
