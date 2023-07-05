@@ -32,7 +32,7 @@ class EventRepository(BaseRepository):
             *,
             title: str,
             subtitle: str = "",
-            text: str = "",
+            text: str,
             picture: HttpUrl,
             location: Location,
             start_at: datetime,
@@ -58,12 +58,7 @@ class EventRepository(BaseRepository):
             RETURN id(event) AS event_id, event, location
         """
 
-        event = Event(title=title)
-        event.subtitle = subtitle
-        event.text = text
-        event.picture = picture
-        event.location = location
-        event.start_at = start_at
+        event = Event(title=title, subtitle=subtitle, text=text, picture=picture, location=location, start_at=start_at)
         event.created_at = datetime.now()
         event.updated_at = datetime.now()
 
