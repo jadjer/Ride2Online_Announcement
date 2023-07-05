@@ -62,7 +62,7 @@ class EventRepository(BaseRepository):
         event.created_at = datetime.now()
         event.updated_at = datetime.now()
 
-        result: AsyncResult = await self.session.run(query, user_id=user_id, **event.__dict__)
+        result: AsyncResult = await self.session.run(query, user_id=user_id, **event.dict())
 
         try:
             record: Record | None = await result.single()
@@ -155,7 +155,7 @@ class EventRepository(BaseRepository):
             SET location.longitude = $event.location.longitude
             RETURN id(event) AS event_id, event, location
         """
-        await self.session.run(query, user_id=user_id, event_id=event_id, **event.__dict__)
+        await self.session.run(query, user_id=user_id, event_id=event_id, **event.dict())
 
         return await self.get_event_by_id(event_id)
 
