@@ -40,7 +40,7 @@ async def create_event(
     if await event_repository.get_event_by_title(request.title):
         raise HTTPException(status.HTTP_409_CONFLICT, strings.EVENT_IS_EXISTS)
 
-    event = await event_repository.create_event_by_user_id(user_id, **request.__dict__)
+    event = await event_repository.create_event_by_user_id(user_id, **request.dict())
     if not event:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, strings.EVENT_CREATE_ERROR)
 
@@ -89,7 +89,7 @@ async def update_event_by_id(
     if not await event_repository.get_event_by_id(event_id):
         raise HTTPException(status.HTTP_404_NOT_FOUND, strings.EVENT_DOES_NOT_EXIST)
 
-    event = await event_repository.update_event_by_id(user_id, event_id, **request.__dict__)
+    event = await event_repository.update_event_by_id(user_id, event_id, **request.dict())
     if not event:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, strings.EVENT_CREATE_ERROR)
 

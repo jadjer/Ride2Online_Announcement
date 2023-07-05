@@ -43,18 +43,18 @@ class EventRepository(BaseRepository):
             WHERE id(user) = $user_id
             CREATE (event:Event)-[:Author]->(user)
             CREATE (event)-[:LocatedAt]->(location:Location)
-            SET event.title = $event.title
-            SET event.subtitle = $event.subtitle
-            SET event.text = $event.text
-            SET event.picture = $event.picture
-            SET event.start_at = $event.start_at
-            SET event.created_at = $event.created_at
-            SET event.updated_at = $event.updated_at
-            SET location.name = $event.location.name
-            SET location.description = $event.location.description
-            SET location.address = $event.location.address
-            SET location.latitude = $event.location.latitude
-            SET location.longitude = $event.location.longitude
+            SET event.title = $title
+            SET event.subtitle = $subtitle
+            SET event.text = $text
+            SET event.picture = $picture
+            SET event.start_at = $start_at
+            SET event.created_at = $created_at
+            SET event.updated_at = $updated_at
+            SET location.name = $location.name
+            SET location.description = $location.description
+            SET location.address = $location.address
+            SET location.latitude = $location.latitude
+            SET location.longitude = $location.longitude
             RETURN id(event) AS event_id, event, location
         """
 
@@ -141,18 +141,18 @@ class EventRepository(BaseRepository):
         query = """
             MATCH (location:Location)<-[:LocatedAt]-(event:Event)-[:Author]->(user:User)
             WHERE id(event) = $event_id AND id(user) = $user_id
-            SET event.title = $event.title
-            SET event.subtitle = $event.subtitle
-            SET event.text = $event.text
-            SET event.picture = $event.picture
-            SET event.start_at = $event.start_at
-            SET event.created_at = $event.created_at
-            SET event.updated_at = $event.updated_at
-            SET location.name = $event.location.name
-            SET location.description = $event.location.description
-            SET location.address = $event.location.address
-            SET location.latitude = $event.location.latitude
-            SET location.longitude = $event.location.longitude
+            SET event.title = $title
+            SET event.subtitle = $subtitle
+            SET event.text = $text
+            SET event.picture = $picture
+            SET event.start_at = $start_at
+            SET event.created_at = $created_at
+            SET event.updated_at = $updated_at
+            SET location.name = $location.name
+            SET location.description = $location.description
+            SET location.address = $location.address
+            SET location.latitude = $location.latitude
+            SET location.longitude = $location.longitude
             RETURN id(event) AS event_id, event, location
         """
         await self.session.run(query, user_id=user_id, event_id=event_id, **event.dict())
