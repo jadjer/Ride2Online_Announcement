@@ -187,7 +187,7 @@ class EventRepository(BaseRepository):
             text=record["event"]["text"],
             picture=record["event"]["picture"],
             location=location,
-            start_at=datetime.fromtimestamp(record["event"]["start_at"]),
+            start_at=datetime.fromisoformat(record["event"]["start_at"]),
             created_at=datetime.fromtimestamp(record["event"]["created_at"]),
             updated_at=datetime.fromtimestamp(record["event"]["updated_at"]),
         )
