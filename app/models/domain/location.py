@@ -17,7 +17,7 @@ from pydantic import BaseModel
 
 class Location(BaseModel):
     name: str
-    description: str
-    address: str
+    description: str = ""
+    address: str = ""
     latitude: float
     longitude: float
