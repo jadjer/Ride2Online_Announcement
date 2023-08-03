@@ -85,15 +85,6 @@ def authorization_prefix(settings: AppSettings) -> str:
 
 
 @pytest.fixture
-def token(settings: AppSettings, test_user: User) -> str:
-    from app.services.token import create_access_token_for_user
-
-    return create_access_token_for_user(
-        test_user.id, test_user.username, test_user.phone, settings.secret_key.get_secret_value()
-    )
-
-
-@pytest.fixture
 def authorized_client(client: AsyncClient, authorization_prefix: str, token: str) -> AsyncClient:
     client.headers = {"Authorization": f"{authorization_prefix} {token}", **client.headers}
     return client

@@ -17,7 +17,7 @@ import sys
 
 from typing import Any, Dict, List, Tuple
 from loguru import logger
-from pydantic import FilePath
+from pydantic import ConfigDict, FilePath
 
 from app.core.logging import InterceptHandler
 from app.core.settings.base import BaseAppSettings
@@ -48,9 +48,7 @@ class AppSettings(BaseAppSettings):
 
     logging_level: int = logging.INFO
     loggers: Tuple[str, str] = ("uvicorn.asgi", "uvicorn.access")
-
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
     @property
     def fastapi_kwargs(self) -> Dict[str, Any]:

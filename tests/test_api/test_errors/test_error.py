@@ -27,6 +27,6 @@ async def test_frw_validation_error_format(app: FastAPI):
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    result = WrapperResponse(**response.json())
+    result = WrapperResponse.model_validate(**response.json())
     assert not result.success
     assert "Not Found" in result.message
