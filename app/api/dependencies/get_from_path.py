@@ -16,6 +16,6 @@ from fastapi import Path
 
 
 def get_event_id(
-        event_id: int = Path(..., ge=1)
+        event_id: int = Path(..., ge=1),
 ) -> int:
     return event_id

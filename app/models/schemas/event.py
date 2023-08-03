@@ -14,9 +14,9 @@
 
 from datetime import datetime
 from typing import List
+from pydantic import Field, HttpUrl
 
-from pydantic import BaseModel, Field, HttpUrl
-
+from app.models.common import BaseAppModel
 from app.models.domain.event import Event
 from app.models.domain.location import Location
 
@@ -24,20 +24,20 @@ DEFAULT_EVENTS_LIMIT = 100
 DEFAULT_EVENTS_OFFSET = 0
 
 
-class EventsFilter(BaseModel):
+class EventsFilter(BaseAppModel):
     limit: int = Field(DEFAULT_EVENTS_LIMIT, ge=1)
     offset: int = Field(DEFAULT_EVENTS_OFFSET, ge=0)
 
 
-class EventResponse(BaseModel):
+class EventResponse(BaseAppModel):
     event: Event
 
 
-class EventsResponse(BaseModel):
+class EventsResponse(BaseAppModel):
     events: List[Event]
 
 
-class EventCreate(BaseModel):
+class EventCreate(BaseAppModel):
     title: str
     subtitle: str = ""
     text: str
@@ -46,7 +46,7 @@ class EventCreate(BaseModel):
     start_at: datetime
 
 
-class EventUpdate(BaseModel):
+class EventUpdate(BaseAppModel):
     title: str | None = None
     subtitle: str | None = None
     text: str | None = None

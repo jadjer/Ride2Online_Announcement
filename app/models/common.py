@@ -13,17 +13,22 @@
 #  limitations under the License.
 
 from datetime import datetime
-from pydantic import BaseModel, Field, validator
+from pydantic import field_validator, BaseModel, Field, ConfigDict
 
 
-class DateTimeModelMixin(BaseModel):
+class BaseAppModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class DateTimeModelMixin(BaseAppModel):
     created_at: datetime = None
     updated_at: datetime = None
 
-    @validator("created_at", "updated_at", pre=True)
+    @field_validator("created_at", "updated_at", mode="before")
+    @classmethod
     def default_datetime(cls, value: datetime) -> datetime:
         return value
 
 
-class IDModelMixin(BaseModel):
+class IDModelMixin(BaseAppModel):
     id: int = Field(0, alias="id")

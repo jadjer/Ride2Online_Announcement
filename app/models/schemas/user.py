@@ -12,10 +12,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from pydantic import BaseModel
-
+from app.models.common import BaseAppModel
 from app.models.domain.user import User
 
 
-class UserResponse(BaseModel):
+class UserResponse(BaseAppModel):
     user: User
